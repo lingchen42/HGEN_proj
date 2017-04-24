@@ -495,13 +495,10 @@ def run_gibbs(df, allele_summary, K=3, rounds=5000, plot_p_history=False, plot_z
     
     if plot_p_history:
         # plot 0 allele frequency history during sampling of a random set of alleles (5) of subpopulation 1
-        alleles_to_plt = choice(polymorphic_alleles, 5)       
-        fig = plt.figure(figsize=(20,4))
-        ax1 = fig.add_subplot(151)
-        ax2 = fig.add_subplot(152)
-        ax3 = fig.add_subplot(153)
-        ax4 = fig.add_subplot(154)
-        ax5 = fig.add_subplot(155)
+        alleles_to_plt = choice(polymorphic_alleles, 16)       
+        nrows = 4
+        ncols = 4
+        fig, axes = plt.subplots(nrows, ncols)
 
     if plot_zlikelihood_history:
 
@@ -523,11 +520,12 @@ def run_gibbs(df, allele_summary, K=3, rounds=5000, plot_p_history=False, plot_z
         zs_all.append(zs)
         
         if plot_p_history:
-            ax1.scatter(n, subpop_dict[1][alleles_to_plt[0]][0], c=colors[0], s=12)
-            ax2.scatter(n, subpop_dict[1][alleles_to_plt[1]][0], c=colors[0], s=12) 
-            ax3.scatter(n, subpop_dict[1][alleles_to_plt[2]][0], c=colors[0], s=12)
-            ax4.scatter(n, subpop_dict[1][alleles_to_plt[3]][0], c=colors[0], s=12) 
-            ax5.scatter(n, subpop_dict[1][alleles_to_plt[4]][0], c=colors[0], s=12) 
+            for x in range(nrows):
+                for y in range(ncols):
+                    allele = alleles_to_plt[nrows*(x-1)+y]
+                    axes[x][y].scatter(n, subpop_dict[0][allele][0], c=colors[1], s=10)
+                    if n ==0:
+                        axes[x][y].set_title(allele, fontsize='xx-small')
 
         if plot_zlikelihood_history:
             for x in range(nrows):
@@ -663,13 +661,14 @@ if __name__ == '__main__':
         rounds = args.rounds
 
         print 'Perform gibbs sampling methods for inferring subpopulation membership based on common variants in first %s variants, ignoring LD, K=%s, rounds=%s'%(n_variants, K, rounds)
-        zs_all, subpop_dict, df_gibbs = run_gibbs(df, allele_summary[:n_variants], K=K, rounds=rounds, plot_zlikelihood_history=True)
+        #zs_all, subpop_dict, df_gibbs = run_gibbs(df, allele_summary[:n_variants], K=K, rounds=rounds, plot_zlikelihood_history=True)
+        zs_all, subpop_dict, df_gibbs = run_gibbs(df, allele_summary[:n_variants], K=K, rounds=rounds, plot_p_history=True)
     
         df_gibbs = compute_pr_z(zs_all, df, final_frac=0.5)
         print df_gibbs['final membership'].value_counts()
         validate_gibbs(df_r, df_gibbs, K=K)
 
-        membership_out = pdf_fn.split('.')[0]+'.membership_500.csv'
+        membership_out = pdf_fn.split('.')[0]+'.membership.csv'
         df_gibbs.to_csv(membership_out, header=True, index=True)
 
     pdf.close()
