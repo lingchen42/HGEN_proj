@@ -3,16 +3,15 @@
 ### - HGEN report revised.pdf
 This the write up which includes results and discussion of the results.
 
-### - m3_proj_final.py
+### - proj_Ling.py
 This is the main script for calculation allele frequencies, hwe, ld, PCA and inferring subpopulation membership. The usage of this script is listed below. Basically, it takes a given data table (in the exact format as suggested in the project description) with `-i` option and compute the answers to all questions of the project3 with `--all` option or selectively compute the answer of some of the questions as suggested below.
 
 
 ```
-./m3_proj_final.py -h
-usage: m3_proj_final.py [-h] -i INPUT [-f] [--hwe] [--ld] [--pca]
-                        [--subpopmembership] [-k K]
-                        [--nofvariants NOFVARIANTS] [--rounds ROUNDS] [--all]
-                        -o OUT
+./proj_Ling.py -h
+usage: proj_Ling.py [-h] -i INPUT [-f] [--hwe] [--ld] [--pca]
+                    [--subpopmembership] [-k K] [--nofvariants NOFVARIANTS]
+                    [--rounds ROUNDS] [--all] -o OUT
 
 HGEN module 3 homework
 
@@ -54,13 +53,13 @@ Required packages: numpy, pandas, matplotlib, seaborn, sklearn, scipy
 Example 1:
 If I want to compute the subpopulation membership of the data, I will input:
 ```
-./m3_proj_final.py -i data.table.txt --subpopmembership -k 2 --nofvariants 1000  --rounds 200 -o test.pdf
+./proj_Ling.py -i data.table.txt --subpopmembership -k 2 --nofvariants 1000  --rounds 200 -o test.pdf
 ```
 
 Example 2:
 If I want to compute all the questions of the data, I will input:
 ```
-./m3_proj_final.py -i data.table.txt --all -o test.pdf
+./proj_Ling.py -i data.table.txt --all -o test.pdf
 ```
 
 ### - HGEN341_module3_final_revised.ipynb/html
