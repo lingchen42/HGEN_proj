@@ -3,12 +3,9 @@
 ### - HGEN report revised.pdf
 This the write up which includes results and discussion of the results.
 
-### - ./m3_proj_final.py
+### - m3_proj_final.py
 This is the main script for calculation allele frequencies, hwe, ld, PCA and inferring subpopulation membership. The usage of this script is listed below. Basically, it takes a given data table (in the exact format as suggested in the project description) with `-i` option and compute the answers to all questions of the project3 with `--all` option or selectively compute the answer of some of the questions as suggested below.
 
-One caveat is that when calculating the LD, it only computes for polymorphic variants of the first 500 variants of each dataset due to the computation power.
-
-Required packages: numpy, pandas, matplotlib, seaborn, sklearn, scipy
 
 ```
 ./m3_proj_final.py -h
@@ -48,6 +45,22 @@ optional arguments:
                         method to reach a stationary distribution
   --all                 Do all the analysis, generate a pdf report
   -o OUT, --out OUT     The file name of the pdf report
+```
+
+One caveat is that when calculating the LD, it only computes for polymorphic variants of the first 500 variants of each dataset due to the computation power.
+
+Required packages: numpy, pandas, matplotlib, seaborn, sklearn, scipy
+
+Example 1:
+If I want to compute the subpopulation membership of the data, I will input:
+```
+./m3_proj_final.py -i data.table.txt --subpopmembership -k 2 --nofvariants 1000  --rounds 200 -o test.pdf
+```
+
+Example 2:
+If I want to compute all the questions of the data, I will input:
+```
+./m3_proj_final.py -i data.table.txt --all -o test.pdf
 ```
 
 ### - HGEN341_module3_final_revised.ipynb/html
