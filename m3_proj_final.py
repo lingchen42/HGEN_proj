@@ -656,7 +656,7 @@ if __name__ == '__main__':
         print 'Plotting PCA...'
         df_r = run_pca(df)
 
-    if args.subpopmembership:
+    if args.subpopmembership or args.all:
 
         K = args.k
         n_variants = args.nofvariants
