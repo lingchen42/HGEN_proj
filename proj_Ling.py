@@ -426,17 +426,11 @@ def update_subpop_dict(new_df, K, polymorphic_alleles, use_as_init=False):
     
     # update subpop_dict = {pop1:{Psnp1=[p_0,p_1], ...}, pop2: ...}
     subpop_dict={}
+
     if not use_as_init:
         grped = new_df.groupby('subpop')
-    
-    for k in range(K):
-        Pkl_dict = {}
-        
-        if use_as_init == True:
-            for a in polymorphic_alleles:
-                Pkl_dict[a] = dirichlet([1, 1], size=1)[0]
-
-        else:           
+        for k in range(K):
+            Pkl_dict = {}
             try:
                 grp = grped.get_group(k)       
                 for a in polymorphic_alleles:
@@ -458,18 +452,24 @@ def update_subpop_dict(new_df, K, polymorphic_alleles, use_as_init=False):
                     n_one = ones + 2*twos
                 
                     #sample prior probility of pkl from dirichlet
-                    Pkl_dict[a] = dirichlet([1+n_zero, 1+n_one], size=1)[0]
-            
+                    Pkl_dict[a] = dirichlet([1+n_zero, 1+n_one], size=1)[0]       
             except KeyError:
                 # random ps for not-seen populations
                 for a in polymorphic_alleles:
-                    Pkl_dict[a] = dirichlet([1, 1], size=1)[0]
-                        
-        subpop_dict[k] = Pkl_dict
+                    Pkl_dict[a] = dirichlet([1, 1], size=1)[0]                      
+            subpop_dict[k] = Pkl_dict
+
+    else:
+        # Every population has the same initiate allele frequency
+        Pkl_dict = {}
+        for a in polymorphic_alleles:
+            Pkl_dict[a] = dirichlet([1, 1], size=1)[0]  
+        for k in range(K):
+            subpop_dict[k] = Pkl_dict 
     
     return subpop_dict
 
-def init_gibbs(df, allele_summary, K=3):  
+def init_gibbs(df, allele_summary, K=2):  
     
     # calculate the Pkl based on the subpopulation membership
     # Only use common polymorphic alleles
@@ -477,15 +477,16 @@ def init_gibbs(df, allele_summary, K=3):
     df = df.ix[:, ['ID']+polymorphic_alleles] #only keep polymorphic snps
     df = code_genotype(df)
 
-    # init prs equally
+    # init allele frequency from a uniformed dirichlet 
     new_subpop_dict = update_subpop_dict(new_df=df, K=K, polymorphic_alleles=polymorphic_alleles, use_as_init=True)
     
     return polymorphic_alleles, df, new_subpop_dict 
 
-def run_gibbs(df, allele_summary, K=3, rounds=5000, plot_p_history=False, plot_zlikelihood_history=False):
+def run_gibbs(df, allele_summary, K=2, rounds=5000, plot_p_history=False, plot_zlikelihood_history=False):
    
-    polymorphic_alleles, df, subpop_dict = init_gibbs(df, allele_summary, K)
+    polymorphic_alleles, df, subpop_dict = init_gibbs(df=df, allele_summary=allele_summary, K=2)
     zs_all =[]
+
     
     stable = False
     n = 0
@@ -606,8 +607,7 @@ if __name__ == '__main__':
 
 	# Out pdf
     pdf_fn = args.out
-    print 'Writing output pdf report to %s'%(pdf_fn)
-  
+    print 'Writing output pdf report to %s'%(pdf_fn) 
 
     pdf = PdfPages(pdf_fn)
 
@@ -660,7 +660,7 @@ if __name__ == '__main__':
         #zs_all, subpop_dict, df_gibbs = run_gibbs(df, allele_summary[:n_variants], K=K, rounds=rounds, plot_zlikelihood_history=True)
         zs_all, subpop_dict, df_gibbs = run_gibbs(df, allele_summary[:n_variants], K=K, rounds=rounds, plot_p_history=True)
     
-        df_gibbs = compute_pr_z(zs_all, df, final_frac=0.5)
+        df_gibbs = compute_pr_z(zs_all, df, final_frac=0.2)
         print df_gibbs['final membership'].value_counts()
         validate_gibbs(df_r, df_gibbs, K=K)
 
